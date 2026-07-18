@@ -15,6 +15,10 @@ dist-ssr
 # Env
 .env
 
+# Tooling / local
+.claude/
+supabase/.temp/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
