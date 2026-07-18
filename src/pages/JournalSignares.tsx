@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 
@@ -92,8 +90,8 @@ const JournalSignares = () => {
                   Comment nous avons traduit cet esprit&nbsp;?
                 </h2>
                 <p className="font-sans text-sm sm:text-base text-foreground/70 leading-relaxed mb-4">
-                  Nous avons repris les courbes des balcons en fer forgé de Gorée pour dessiner 
-                  les maillons du collier Signare. Chaque pièce du coffret est un fragment 
+                  Nous avons repris les courbes des balcons en fer forgé de Gorée pour dessiner
+                  les maillons du collier Signare. Chaque pièce de la collection est un fragment
                   d'architecture porté à même la peau.
                 </p>
                 <p className="font-sans text-sm text-foreground/50 leading-relaxed">
@@ -119,13 +117,6 @@ const JournalSignares = () => {
           <p className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-8">
             Appropriez-vous cet héritage.
           </p>
-          <Link
-            to="/coffret-dakar"
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 font-bold uppercase text-[10px] sm:text-xs tracking-[0.2em] rounded-sm hover:bg-primary/90 transition-colors"
-          >
-            Voir le Coffret Signares
-            <ArrowRight className="w-4 h-4" />
-          </Link>
           <p className="text-foreground/40 text-xs mt-3 tracking-wide uppercase">
             Édition Limitée — 50 exemplaires
           </p>

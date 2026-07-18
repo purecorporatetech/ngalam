@@ -1,6 +1,5 @@
 import SiteHeader from "@/components/SiteHeader";
 import HeroSection from "@/components/HeroSection";
-import FeaturedDrop from "@/components/FeaturedDrop";
 import StorytellingSection from "@/components/StorytellingSection";
 import CollectionGrid from "@/components/CollectionGrid";
 import SiteFooter from "@/components/SiteFooter";
@@ -11,7 +10,7 @@ const Index = () => {
       <SiteHeader />
       <main>
         <HeroSection />
-        <FeaturedDrop />
+        {/* TODO Chantier 7 : bloc « Édition Signares en cours » */}
         <StorytellingSection />
         <CollectionGrid />
       </main>

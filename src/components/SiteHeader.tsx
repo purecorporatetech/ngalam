@@ -12,7 +12,6 @@ import {
 
 const navLinks = [
   { label: "E-shop", href: "#" },
-  { label: "Le Coffret", href: "/coffret-dakar" },
   { label: "L'Histoire", href: "/histoire" },
 ];
 
