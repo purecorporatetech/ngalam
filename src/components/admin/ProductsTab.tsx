@@ -16,30 +16,55 @@ import { toast } from "sonner";
 import ProductForm from "./ProductForm";
 import InlineEditCell from "./InlineEditCell";
 import EditProductModal from "./EditProductModal";
-import type { Tables } from "@/integrations/supabase/types";
+import type { Tables, TablesUpdate } from "@/integrations/supabase/types";
 
 interface ProductsTabProps {
   filterOutOfStock?: boolean;
 }
 
+type VariantSummary = Pick<Tables<"product_variants">, "finish" | "stock_quantity">;
+type ProductWithVariants = Tables<"products"> & {
+  product_variants: VariantSummary[];
+};
+
+const CATEGORY_LABELS: Record<string, string> = {
+  colliers: "Colliers",
+  bagues: "Bagues",
+  bracelets: "Bracelets",
+  boucles: "Boucles d'oreilles",
+};
+
+// Stock effectif : somme des variantes si présentes, sinon stock legacy du produit.
+const totalStock = (p: ProductWithVariants) =>
+  p.product_variants.length > 0
+    ? p.product_variants.reduce((s, v) => s + v.stock_quantity, 0)
+    : p.stock_quantity;
+
 const ProductsTab = ({ filterOutOfStock = false }: ProductsTabProps) => {
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Tables<"products"> | null>(null);
 
-  const { data: products, refetch } = useQuery({
+  const { data: products, refetch } = useQuery<ProductWithVariants[]>({
     queryKey: ["admin-products"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*")
+        .select("*, product_variants(finish, stock_quantity)")
+        .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return (data ?? []) as ProductWithVariants[];
     },
   });
 
-  const updateField = async (id: string, field: string, value: number) => {
-    const { error } = await supabase.from("products").update({ [field]: value }).eq("id", id);
+  const updateField = async (
+    id: string,
+    field: "price" | "stock_quantity",
+    value: number
+  ) => {
+    const patch: TablesUpdate<"products"> =
+      field === "price" ? { price: value } : { stock_quantity: value };
+    const { error } = await supabase.from("products").update(patch).eq("id", id);
     if (error) {
       toast.error(error.message);
       return;
@@ -87,6 +112,7 @@ const ProductsTab = ({ filterOutOfStock = false }: ProductsTabProps) => {
               <TableHead>Image</TableHead>
               <TableHead>Nom</TableHead>
               <TableHead>Catégorie</TableHead>
+              <TableHead>Dispo.</TableHead>
               <TableHead>Prix</TableHead>
               <TableHead>Stock</TableHead>
               <TableHead>En avant</TableHead>
@@ -96,15 +122,18 @@ const ProductsTab = ({ filterOutOfStock = false }: ProductsTabProps) => {
           <TableBody>
             {products?.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                   Aucun produit. Cliquez sur "Ajouter un produit" pour commencer.
                 </TableCell>
               </TableRow>
             )}
             {products
-              ?.filter((p) => !filterOutOfStock || p.stock_quantity === 0)
-              .map((product) => (
-              <TableRow key={product.id} className={product.stock_quantity === 0 ? "bg-destructive/5" : product.stock_quantity < 5 ? "bg-orange-50 dark:bg-orange-950/20" : ""}>
+              ?.filter((p) => !filterOutOfStock || totalStock(p) === 0)
+              .map((product) => {
+                const stock = totalStock(product);
+                const hasVariants = product.product_variants.length > 0;
+                return (
+              <TableRow key={product.id} className={stock === 0 ? "bg-destructive/5" : stock < 5 ? "bg-orange-50 dark:bg-orange-950/20" : ""}>
                 <TableCell>
                   {product.image_url ? (
                     <img src={product.image_url} alt={product.name} className="h-10 w-10 object-cover rounded" />
@@ -112,21 +141,60 @@ const ProductsTab = ({ filterOutOfStock = false }: ProductsTabProps) => {
                     <div className="h-10 w-10 bg-muted rounded" />
                   )}
                 </TableCell>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell><Badge variant="secondary">{product.category}</Badge></TableCell>
+                <TableCell className="font-medium">
+                  {product.name}
+                  {product.wolof_name && (
+                    <span className="block text-xs text-muted-foreground italic">{product.wolof_name}</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {product.category_key ? (
+                    <Badge variant="secondary">{CATEGORY_LABELS[product.category_key] ?? product.category_key}</Badge>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Badge variant={product.availability === "drop" ? "default" : "outline"}>
+                    {product.availability === "drop" ? "Drop" : "Permanent"}
+                  </Badge>
+                </TableCell>
                 <TableCell>
                   <InlineEditCell value={product.price} type="price" onSave={(v) => updateField(product.id, "price", v)} />
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    <InlineEditCell value={product.stock_quantity} type="stock" onSave={(v) => updateField(product.id, "stock_quantity", v)} />
-                    {product.stock_quantity === 0 && (
-                      <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
-                        <AlertTriangle className="h-3 w-3 mr-0.5" />
-                        ÉPUISÉ
-                      </Badge>
-                    )}
-                  </div>
+                  {hasVariants ? (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <span className={stock === 0 ? "text-destructive font-bold" : stock < 5 ? "text-orange-500 font-semibold" : ""}>
+                          {stock}
+                        </span>
+                        {stock === 0 && (
+                          <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                            <AlertTriangle className="h-3 w-3 mr-0.5" />
+                            ÉPUISÉ
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {product.product_variants.map((v) => (
+                          <Badge key={v.finish} variant="secondary" className="text-[10px] px-1.5 py-0 capitalize">
+                            {v.finish}: {v.stock_quantity}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <InlineEditCell value={product.stock_quantity} type="stock" onSave={(v) => updateField(product.id, "stock_quantity", v)} />
+                      {stock === 0 && (
+                        <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                          <AlertTriangle className="h-3 w-3 mr-0.5" />
+                          ÉPUISÉ
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 </TableCell>
                 <TableCell>{product.is_featured ? "✓" : "—"}</TableCell>
                 <TableCell className="text-right">
@@ -158,7 +226,8 @@ const ProductsTab = ({ filterOutOfStock = false }: ProductsTabProps) => {
                   </div>
                 </TableCell>
               </TableRow>
-            ))}
+                );
+              })}
           </TableBody>
         </Table>
       </div>

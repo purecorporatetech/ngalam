@@ -10,7 +10,32 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.5"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -89,42 +114,139 @@ export type Database = {
         }
         Relationships: []
       }
+      product_images: {
+        Row: {
+          alt_text: string | null
+          created_at: string
+          id: string
+          image_url: string
+          is_primary: boolean
+          position: number
+          product_id: string
+        }
+        Insert: {
+          alt_text?: string | null
+          created_at?: string
+          id?: string
+          image_url: string
+          is_primary?: boolean
+          position?: number
+          product_id: string
+        }
+        Update: {
+          alt_text?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_primary?: boolean
+          position?: number
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_variants: {
+        Row: {
+          created_at: string
+          finish: string
+          id: string
+          price: number | null
+          product_id: string
+          sku: string | null
+          stock_quantity: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          finish: string
+          id?: string
+          price?: number | null
+          product_id: string
+          sku?: string | null
+          stock_quantity?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          finish?: string
+          id?: string
+          price?: number | null
+          product_id?: string
+          sku?: string | null
+          stock_quantity?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
+          availability: string
           category: string
+          category_key: string | null
           created_at: string
           description: string | null
+          histoire: string | null
           id: string
           image_url: string | null
           is_featured: boolean
           name: string
           price: number
+          sort_order: number
           stock_quantity: number
           updated_at: string
+          valeur: string | null
+          wolof_name: string | null
         }
         Insert: {
+          availability?: string
           category?: string
+          category_key?: string | null
           created_at?: string
           description?: string | null
+          histoire?: string | null
           id?: string
           image_url?: string | null
           is_featured?: boolean
           name: string
           price?: number
+          sort_order?: number
           stock_quantity?: number
           updated_at?: string
+          valeur?: string | null
+          wolof_name?: string | null
         }
         Update: {
+          availability?: string
           category?: string
+          category_key?: string | null
           created_at?: string
           description?: string | null
+          histoire?: string | null
           id?: string
           image_url?: string | null
           is_featured?: boolean
           name?: string
           price?: number
+          sort_order?: number
           stock_quantity?: number
           updated_at?: string
+          valeur?: string | null
+          wolof_name?: string | null
         }
         Relationships: []
       }
@@ -286,6 +408,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       app_role: ["admin", "user"],
