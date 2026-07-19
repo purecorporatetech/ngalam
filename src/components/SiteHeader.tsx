@@ -12,6 +12,7 @@ import {
 import { CATEGORIES } from "@/lib/products";
 
 const navLinks = [
+  { label: "Édition Signares", href: "/edition-signares" },
   { label: "L'Histoire", href: "/histoire" },
 ];
 
