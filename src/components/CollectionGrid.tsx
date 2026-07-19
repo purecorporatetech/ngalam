@@ -1,21 +1,23 @@
-import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import ProductCard from "@/components/ProductCard";
+import { SHOP_SELECT, type ShopProduct } from "@/lib/products";
 
 const CollectionGrid = () => {
-  const { data: products, isLoading } = useQuery({
+  const { data: products, isLoading } = useQuery<ShopProduct[]>({
     queryKey: ["essentials"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*")
-        .neq("category", "Drop")
+        .select(SHOP_SELECT)
+        .eq("availability", "permanent")
+        .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false })
         .limit(4);
       if (error) throw error;
-      return data;
+      return (data ?? []) as ShopProduct[];
     },
   });
 
@@ -34,43 +36,16 @@ const CollectionGrid = () => {
                 <Skeleton className="h-4 w-1/3" />
               </div>
             ))
-          : products?.map((product) => (
-              <div key={product.id} className="group">
-                <Link to={`/product/${product.id}`}>
-                  <div className="aspect-[3/4] bg-muted mb-4 relative flex items-center justify-center rounded-sm overflow-hidden">
-                    {product.is_featured && (
-                      <span className="absolute top-0 left-0 bg-primary text-primary-foreground text-[10px] px-2 py-1 uppercase tracking-wider z-10">
-                        BEST SELLER
-                      </span>
-                    )}
-                    {product.image_url ? (
-                      <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-muted-foreground/40 text-xs tracking-[0.15em] uppercase">
-                        Photo à venir
-                      </span>
-                    )}
-                  </div>
-                </Link>
+          : products?.map((product) => <ProductCard key={product.id} product={product} />)}
+      </div>
 
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-serif text-lg text-foreground leading-tight">
-                      <Link to={`/product/${product.id}`} className="hover:text-primary transition-colors">
-                        {product.name}
-                      </Link>
-                    </h3>
-                    <span className="font-sans font-medium text-sm text-foreground/70">{product.price}€</span>
-                  </div>
-                  <button
-                    aria-label={`Ajouter ${product.name}`}
-                    className="mt-1 w-7 h-7 flex items-center justify-center border border-foreground/20 rounded-sm text-foreground/50 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
-                  >
-                    <Plus className="w-3.5 h-3.5" strokeWidth={2} />
-                  </button>
-                </div>
-              </div>
-            ))}
+      <div className="text-center mt-10 md:mt-14">
+        <Link
+          to="/boutique"
+          className="inline-block text-xs uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground border-b border-foreground/30 pb-1 transition-colors"
+        >
+          Voir toute la boutique
+        </Link>
       </div>
     </section>
   );
