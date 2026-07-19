@@ -2,17 +2,21 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 
 export interface CartItem {
   id: string;
+  // Clé de ligne unique par (produit, finition) : deux finitions d'un même
+  // produit forment deux lignes distinctes dans le panier.
+  lineId: string;
   name: string;
   price: number;
   image_url: string | null;
+  finish?: string | null;
   quantity: number;
 }
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, "quantity">) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  addItem: (item: Omit<CartItem, "quantity" | "lineId">) => void;
+  removeItem: (lineId: string) => void;
+  updateQuantity: (lineId: string, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
@@ -25,10 +29,18 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const STORAGE_KEY = "ngalam-cart";
 
+const lineIdFor = (id: string, finish?: string | null) => `${id}::${finish ?? ""}`;
+
 const loadCart = (): CartItem[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as CartItem[];
+    // Normalise les paniers persistés avant l'ajout de lineId/finish.
+    return parsed.map((i) => ({
+      ...i,
+      lineId: i.lineId ?? lineIdFor(i.id, i.finish),
+    }));
   } catch {
     return [];
   }
@@ -42,27 +54,28 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
-  const addItem = useCallback((item: Omit<CartItem, "quantity">) => {
+  const addItem = useCallback((item: Omit<CartItem, "quantity" | "lineId">) => {
+    const lineId = lineIdFor(item.id, item.finish);
     setItems((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+      const existing = prev.find((i) => i.lineId === lineId);
       if (existing) {
-        return prev.map((i) => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i);
+        return prev.map((i) => i.lineId === lineId ? { ...i, quantity: i.quantity + 1 } : i);
       }
-      return [...prev, { ...item, quantity: 1 }];
+      return [...prev, { ...item, lineId, quantity: 1 }];
     });
     setIsOpen(true);
   }, []);
 
-  const removeItem = useCallback((id: string) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
+  const removeItem = useCallback((lineId: string) => {
+    setItems((prev) => prev.filter((i) => i.lineId !== lineId));
   }, []);
 
-  const updateQuantity = useCallback((id: string, quantity: number) => {
+  const updateQuantity = useCallback((lineId: string, quantity: number) => {
     if (quantity <= 0) {
-      setItems((prev) => prev.filter((i) => i.id !== id));
+      setItems((prev) => prev.filter((i) => i.lineId !== lineId));
       return;
     }
-    setItems((prev) => prev.map((i) => i.id === id ? { ...i, quantity } : i));
+    setItems((prev) => prev.map((i) => i.lineId === lineId ? { ...i, quantity } : i));
   }, []);
 
   const clearCart = useCallback(() => setItems([]), []);

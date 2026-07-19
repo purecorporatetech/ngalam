@@ -3,9 +3,9 @@ import type { Tables } from "@/integrations/supabase/types";
 // SELECT partagé : joint les variantes de finition et la galerie d'images.
 // À utiliser côté boutique/vitrine plutôt que les colonnes legacy de products.
 export const SHOP_SELECT =
-  "*, product_variants(finish, price, stock_quantity), product_images(image_url, is_primary, position)";
+  "*, product_variants(finish, price, stock_quantity, sku), product_images(image_url, is_primary, position)";
 
-export type ShopVariant = Pick<Tables<"product_variants">, "finish" | "price" | "stock_quantity">;
+export type ShopVariant = Pick<Tables<"product_variants">, "finish" | "price" | "stock_quantity" | "sku">;
 export type ShopImage = Pick<Tables<"product_images">, "image_url" | "is_primary" | "position">;
 export type ShopProduct = Tables<"products"> & {
   product_variants: ShopVariant[];
