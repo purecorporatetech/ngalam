@@ -9,9 +9,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CATEGORIES } from "@/lib/products";
 
 const navLinks = [
-  { label: "E-shop", href: "#" },
   { label: "L'Histoire", href: "/histoire" },
 ];
 
@@ -39,25 +39,30 @@ const SiteHeader = () => {
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
           <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) =>
-              link.href.startsWith("/") ? (
-                <Link
-                  key={link.label}
-                  to={link.href}
-                  className="text-xs uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ) : (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="text-xs uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-colors"
-                >
-                  {link.label}
-                </a>
-              )
-            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="text-xs uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-colors outline-none">
+                Boutique
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem asChild className="text-xs uppercase tracking-[0.1em] cursor-pointer">
+                  <Link to="/boutique">Tout</Link>
+                </DropdownMenuItem>
+                {CATEGORIES.map((c) => (
+                  <DropdownMenuItem key={c.key} asChild className="text-xs uppercase tracking-[0.1em] cursor-pointer">
+                    <Link to={c.path}>{c.label}</Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                to={link.href}
+                className="text-xs uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
         </div>
 
@@ -114,27 +119,35 @@ const SiteHeader = () => {
       {/* Mobile menu */}
       {mobileOpen && (
         <nav className="lg:hidden border-t border-foreground/10 px-6 py-6 flex flex-col gap-5 animate-fade-in">
-          {navLinks.map((link) =>
-            link.href.startsWith("/") ? (
+          <Link
+            to="/boutique"
+            className="text-sm uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-colors"
+            onClick={() => setMobileOpen(false)}
+          >
+            Boutique
+          </Link>
+          <div className="flex flex-col gap-3 pl-4 border-l border-foreground/10">
+            {CATEGORIES.map((c) => (
               <Link
-                key={link.label}
-                to={link.href}
-                className="text-sm uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-colors"
+                key={c.key}
+                to={c.path}
+                className="text-xs uppercase tracking-[0.15em] text-foreground/60 hover:text-foreground transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
-                {link.label}
+                {c.label}
               </Link>
-            ) : (
-              <a
-                key={link.label}
-                href={link.href}
-                className="text-sm uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-colors"
-                onClick={() => setMobileOpen(false)}
-              >
-                {link.label}
-              </a>
-            )
-          )}
+            ))}
+          </div>
+          {navLinks.map((link) => (
+            <Link
+              key={link.label}
+              to={link.href}
+              className="text-sm uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-colors"
+              onClick={() => setMobileOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
           {!user && (
             <Link
               to="/auth"
