@@ -39,6 +39,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      campaigns: {
+        Row: {
+          closes_at: string
+          created_at: string
+          hero_image: string | null
+          id: string
+          opens_at: string
+          slug: string
+          status: string
+          story: string | null
+          subtitle: string | null
+          title: string
+          updated_at: string
+          valeur: string | null
+        }
+        Insert: {
+          closes_at: string
+          created_at?: string
+          hero_image?: string | null
+          id?: string
+          opens_at: string
+          slug: string
+          status?: string
+          story?: string | null
+          subtitle?: string | null
+          title: string
+          updated_at?: string
+          valeur?: string | null
+        }
+        Update: {
+          closes_at?: string
+          created_at?: string
+          hero_image?: string | null
+          id?: string
+          opens_at?: string
+          slug?: string
+          status?: string
+          story?: string | null
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+          valeur?: string | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           id: string
@@ -200,6 +245,7 @@ export type Database = {
           category_key: string | null
           created_at: string
           description: string | null
+          drop_id: string | null
           histoire: string | null
           id: string
           image_url: string | null
@@ -218,6 +264,7 @@ export type Database = {
           category_key?: string | null
           created_at?: string
           description?: string | null
+          drop_id?: string | null
           histoire?: string | null
           id?: string
           image_url?: string | null
@@ -236,6 +283,7 @@ export type Database = {
           category_key?: string | null
           created_at?: string
           description?: string | null
+          drop_id?: string | null
           histoire?: string | null
           id?: string
           image_url?: string | null
@@ -248,7 +296,15 @@ export type Database = {
           valeur?: string | null
           wolof_name?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_drop_id_fkey"
+            columns: ["drop_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -267,6 +323,35 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      waitlist: {
+        Row: {
+          campaign_id: string | null
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          campaign_id?: string | null
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          campaign_id?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
