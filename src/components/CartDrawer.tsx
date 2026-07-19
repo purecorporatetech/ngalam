@@ -69,7 +69,7 @@ const CartDrawer = () => {
             {/* Items list */}
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
               {items.map((item) => (
-                <div key={item.id} className="flex gap-4">
+                <div key={item.lineId} className="flex gap-4">
                   {/* Image */}
                   <div className="w-20 h-24 bg-muted rounded-sm overflow-hidden flex-shrink-0">
                     {item.image_url ? (
@@ -83,6 +83,11 @@ const CartDrawer = () => {
                   <div className="flex-1 flex flex-col justify-between min-w-0">
                     <div>
                       <h4 className="font-serif text-sm text-foreground leading-tight truncate">{item.name}</h4>
+                      {item.finish && (
+                        <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground mt-0.5">
+                          Finition : {item.finish}
+                        </p>
+                      )}
                       <p className="text-sm font-medium text-foreground/80 mt-0.5">{item.price}&nbsp;€</p>
                     </div>
 
@@ -90,7 +95,7 @@ const CartDrawer = () => {
                     <div className="flex items-center gap-3">
                       <div className="inline-flex items-center border border-foreground/15 rounded-sm">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.lineId, item.quantity - 1)}
                           className="w-7 h-7 flex items-center justify-center text-foreground/60 hover:text-foreground transition-colors"
                           aria-label="Réduire la quantité"
                         >
@@ -100,7 +105,7 @@ const CartDrawer = () => {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.lineId, item.quantity + 1)}
                           className="w-7 h-7 flex items-center justify-center text-foreground/60 hover:text-foreground transition-colors"
                           aria-label="Augmenter la quantité"
                         >
@@ -112,7 +117,7 @@ const CartDrawer = () => {
 
                   {/* Remove */}
                   <button
-                    onClick={() => removeItem(item.id)}
+                    onClick={() => removeItem(item.lineId)}
                     className="self-start text-muted-foreground hover:text-destructive transition-colors p-1"
                     aria-label="Retirer du panier"
                   >
