@@ -29,3 +29,6 @@ supabase/.temp/
 *.njsproj
 *.sln
 *.sw?
+
+# Brand kit sources (lourds, non versionnés — dérivés dans public/brand/)
+brand-source/
