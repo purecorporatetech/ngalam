@@ -17,7 +17,10 @@ const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
 
   return (
     <aside className="w-56 min-h-screen border-r border-border bg-card p-4">
-      <h2 className="font-serif text-lg font-semibold mb-6 px-2">Admin</h2>
+      <h2 className="font-serif text-lg font-semibold mb-6 px-2 flex items-center gap-2">
+        <img src="/brand/monogram-indigo.png" alt="" width={512} height={512} className="w-6 h-6" />
+        Admin
+      </h2>
       <nav className="space-y-1">
         {items.map((item) => (
           <button

@@ -52,12 +52,14 @@ const SiteFooter = () => {
           </div>
 
           {/* Identité */}
-          <div className="flex flex-col">
-            <span className="font-serif font-bold text-2xl tracking-[0.3em] mb-3">NGALAM</span>
-            <p className="text-sm leading-relaxed">
-              <span className="font-sans text-background/50 tracking-wide">Designed in Paris.</span>{" "}
-              <span className="font-serif italic text-background/90">Soul in Dakar.</span>
-            </p>
+          <div className="flex flex-col justify-start">
+            <img
+              src="/brand/wordmark-sand-full.png"
+              alt="NGALAM — Designed in Paris. Soul in Dakar."
+              width={1200}
+              height={240}
+              className="w-[220px] sm:w-[240px] h-auto"
+            />
           </div>
         </div>
       </div>
