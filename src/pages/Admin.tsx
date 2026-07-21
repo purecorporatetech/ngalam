@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
-import AdminSidebar from "@/components/admin/AdminSidebar";
+import AdminSidebar, { type AdminTab } from "@/components/admin/AdminSidebar";
 import ProductsTab from "@/components/admin/ProductsTab";
 import OrdersTab from "@/components/admin/OrdersTab";
+import CampaignsTab from "@/components/admin/CampaignsTab";
 import KpiCards from "@/components/admin/KpiCards";
 import { Loader2 } from "lucide-react";
 
 const Admin = () => {
   const { isAdmin, loading } = useAdminCheck();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"products" | "orders">("products");
+  const [activeTab, setActiveTab] = useState<AdminTab>("products");
   const [filterOutOfStock, setFilterOutOfStock] = useState(false);
 
   useEffect(() => {
@@ -38,6 +39,7 @@ const Admin = () => {
           outOfStockActive={filterOutOfStock}
         />
         {activeTab === "products" && <ProductsTab filterOutOfStock={filterOutOfStock} />}
+        {activeTab === "campaigns" && <CampaignsTab />}
         {activeTab === "orders" && <OrdersTab />}
       </main>
     </div>

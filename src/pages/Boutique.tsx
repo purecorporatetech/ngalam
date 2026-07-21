@@ -5,17 +5,11 @@ import { supabase } from "@/integrations/supabase/client";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ProductCard from "@/components/ProductCard";
+import EditionTeaser from "@/components/EditionTeaser";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   SHOP_SELECT,
   CATEGORIES,
@@ -33,16 +27,18 @@ interface BoutiqueProps {
 
 const Boutique = ({ category }: BoutiqueProps) => {
   const [finishFilters, setFinishFilters] = useState<string[]>([]);
-  const [availability, setAvailability] = useState<string>("all");
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
 
   const { data: products, isLoading } = useQuery<ShopProduct[]>({
     queryKey: ["shop-products", category ?? "all"],
     queryFn: async () => {
+      // Boutique pure : uniquement les Essentiels permanents. Les pièces d'une
+      // Édition (availability='drop') vivent sur /edition puis au Vestiaire.
       let query = supabase
         .from("products")
         .select(SHOP_SELECT)
+        .eq("availability", "permanent")
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
       if (category) query = query.eq("category_key", category);
@@ -60,7 +56,6 @@ const Boutique = ({ category }: BoutiqueProps) => {
     const min = priceMin === "" ? null : parseFloat(priceMin);
     const max = priceMax === "" ? null : parseFloat(priceMax);
     return products.filter((p) => {
-      if (availability !== "all" && p.availability !== availability) return false;
       if (finishFilters.length > 0) {
         const finishes = getFinishes(p);
         if (!finishFilters.some((f) => finishes.includes(f))) return false;
@@ -70,7 +65,7 @@ const Boutique = ({ category }: BoutiqueProps) => {
       if (max != null && price > max) return false;
       return true;
     });
-  }, [products, availability, finishFilters, priceMin, priceMax]);
+  }, [products, finishFilters, priceMin, priceMax]);
 
   const title = category ? CATEGORY_LABELS[category] : "La Boutique";
 
@@ -78,6 +73,7 @@ const Boutique = ({ category }: BoutiqueProps) => {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="max-w-6xl mx-auto px-5 md:px-6 py-10 md:py-16">
+        <EditionTeaser />
         <header className="text-center mb-8 md:mb-12">
           <span className="text-primary text-[10px] sm:text-xs tracking-[0.3em] font-bold uppercase block mb-3">
             Collection
@@ -114,20 +110,6 @@ const Boutique = ({ category }: BoutiqueProps) => {
                 </Button>
               ))}
             </div>
-          </div>
-
-          <div className="space-y-1">
-            <Label className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Disponibilité</Label>
-            <Select value={availability} onValueChange={setAvailability}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes</SelectItem>
-                <SelectItem value="permanent">Permanent</SelectItem>
-                <SelectItem value="drop">Édition limitée</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="space-y-1">

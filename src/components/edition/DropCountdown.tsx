@@ -1,4 +1,4 @@
-import { computeCountdown } from "@/lib/signares";
+import { computeCountdown } from "@/lib/edition";
 
 interface DropCountdownProps {
   closesAt: string;
@@ -24,7 +24,7 @@ const DropCountdown = ({ closesAt, now }: DropCountdownProps) => {
   if (done) {
     return (
       <p className="font-serif text-xl sm:text-2xl text-primary-foreground/90 uppercase tracking-[0.15em]">
-        Cette Signare s'est refermée.
+        Cette Édition s'est refermée.
       </p>
     );
   }

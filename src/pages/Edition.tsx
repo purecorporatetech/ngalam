@@ -4,9 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import WaitlistForm from "@/components/signares/WaitlistForm";
-import DropCountdown from "@/components/signares/DropCountdown";
-import Vestiaire from "@/components/signares/Vestiaire";
+import WaitlistForm from "@/components/edition/WaitlistForm";
+import DropCountdown from "@/components/edition/DropCountdown";
+import Vestiaire from "@/components/edition/Vestiaire";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   SHOP_SELECT,
@@ -20,7 +20,7 @@ import {
   isCampaignLive,
   isCampaignClosed,
   formatParisDate,
-} from "@/lib/signares";
+} from "@/lib/edition";
 
 const FINISH_DOT: Record<string, string> = { or: "bg-accent", argent: "bg-muted-foreground" };
 
@@ -65,7 +65,7 @@ const CapsulePiece = ({ product, closesAt }: { product: ShopProduct; closesAt: s
   );
 };
 
-const EditionSignares = () => {
+const Edition = () => {
   // Horloge de page : pilote countdown + bascule d'état à la fermeture.
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -131,7 +131,7 @@ const EditionSignares = () => {
               <div className="absolute inset-0 bg-foreground/55" />
               <div className="relative z-10 text-center px-5 md:px-6 py-20 max-w-3xl">
                 <span className="text-primary-foreground/70 text-[10px] sm:text-xs tracking-[0.35em] uppercase block mb-5">
-                  L'Édition Signares · La Signare du mois
+                  L'ÉDITION · La figure du mois
                 </span>
                 {live.valeur && (
                   <span className="block font-serif text-lg sm:text-xl italic text-accent mb-3">{live.valeur}</span>
@@ -178,7 +178,7 @@ const EditionSignares = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-center text-muted-foreground italic">Les pièces de cette Signare se dévoilent bientôt.</p>
+                  <p className="text-center text-muted-foreground italic">Les pièces de cette Édition se dévoilent bientôt.</p>
                 )}
               </div>
             </section>
@@ -187,7 +187,7 @@ const EditionSignares = () => {
             <section className="py-16 md:py-24 px-5 md:px-6 text-center">
               <h2 className="font-serif text-3xl sm:text-4xl text-foreground mb-3">Rejoins le Cercle</h2>
               <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto mb-8">
-                Sois prévenue avant tout le monde de l'ouverture des prochaines Signares, et des dernières heures de celle-ci.
+                Sois prévenue avant tout le monde de l'ouverture des prochaines Éditions, et des dernières heures de celle-ci.
               </p>
               <WaitlistForm campaignId={live.id} />
             </section>
@@ -197,10 +197,10 @@ const EditionSignares = () => {
           <>
             <section className="py-20 md:py-32 px-5 md:px-6 text-center">
               <span className="text-primary text-[10px] sm:text-xs tracking-[0.3em] font-bold uppercase block mb-5">
-                L'Édition Signares
+                L'Édition
               </span>
               <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground leading-[1.1] mb-6 max-w-2xl mx-auto">
-                La prochaine Signare se prépare.
+                La prochaine Édition se prépare.
               </h1>
               <p className="font-sans text-base sm:text-lg text-foreground/70 max-w-xl mx-auto mb-10">
                 Chaque mois, une femme, une valeur, une capsule rare — ouverte quelques jours, puis refermée à jamais. Rejoins le Cercle pour être prévenue à l'ouverture.
@@ -215,10 +215,10 @@ const EditionSignares = () => {
             <section className="relative min-h-[80vh] flex items-center justify-center px-5 md:px-6 overflow-hidden">
               <div className="max-w-2xl mx-auto text-center py-20">
                 <span className="text-primary text-[10px] sm:text-xs tracking-[0.35em] uppercase block mb-6">
-                  L'Édition Signares
+                  L'Édition
                 </span>
                 <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground leading-[1.08] mb-8">
-                  Chaque mois, une Signare.
+                  Chaque mois, une Édition.
                 </h1>
                 <div className="font-serif text-lg sm:text-xl text-foreground/80 leading-relaxed space-y-5 mb-12">
                   <p>
@@ -243,4 +243,4 @@ const EditionSignares = () => {
   );
 };
 
-export default EditionSignares;
+export default Edition;

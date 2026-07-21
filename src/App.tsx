@@ -2,13 +2,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import CartDrawer from "@/components/CartDrawer";
 import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
 import Boutique from "./pages/Boutique";
-import EditionSignares from "./pages/EditionSignares";
+import Edition from "./pages/Edition";
 import Histoire from "./pages/Histoire";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
@@ -34,7 +34,9 @@ const App = () => (
             <Route path="/bagues" element={<Boutique category="bagues" />} />
             <Route path="/bracelets" element={<Boutique category="bracelets" />} />
             <Route path="/boucles-doreilles" element={<Boutique category="boucles" />} />
-            <Route path="/edition-signares" element={<EditionSignares />} />
+            <Route path="/edition" element={<Edition />} />
+            {/* Ancienne URL — redirection permanente vers /edition */}
+            <Route path="/edition-signares" element={<Navigate to="/edition" replace />} />
             <Route path="/histoire" element={<Histoire />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />

@@ -1,10 +1,10 @@
-import { type Campaign, formatParisMonth } from "@/lib/signares";
+import { type Campaign, formatParisMonth } from "@/lib/edition";
 
 interface VestiaireProps {
   closed: Campaign[];
 }
 
-// Archive des Signares refermées — présentées comme des souvenirs,
+// Archive des Éditions refermées — présentées comme des souvenirs,
 // NON rachetables. Aucun lien d'achat.
 const Vestiaire = ({ closed }: VestiaireProps) => {
   return (
@@ -14,12 +14,12 @@ const Vestiaire = ({ closed }: VestiaireProps) => {
           <span className="text-primary text-[10px] sm:text-xs tracking-[0.3em] font-bold uppercase block mb-3">
             L'Archive
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-foreground">Le Vestiaire des Signares</h2>
+          <h2 className="font-serif text-3xl sm:text-4xl text-foreground">Le Vestiaire</h2>
         </div>
 
         {closed.length === 0 ? (
           <p className="text-center font-serif text-lg sm:text-xl text-muted-foreground italic max-w-xl mx-auto">
-            Le Vestiaire s'écrira au fil des Signares. Chaque édition refermée y déposera son souvenir.
+            Le Vestiaire s'écrira au fil des Éditions. Chaque édition refermée y déposera son souvenir.
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -50,7 +50,7 @@ const Vestiaire = ({ closed }: VestiaireProps) => {
                 {c.valeur && (
                   <p className="font-serif text-sm italic text-primary mt-0.5">{c.valeur}</p>
                 )}
-                <p className="text-xs text-muted-foreground mt-2">Cette Signare s'est refermée.</p>
+                <p className="text-xs text-muted-foreground mt-2">Cette Édition s'est refermée.</p>
               </article>
             ))}
           </div>

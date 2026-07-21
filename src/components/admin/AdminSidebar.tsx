@@ -1,14 +1,17 @@
-import { Package, ShoppingCart } from "lucide-react";
+import { Package, ShoppingCart, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+export type AdminTab = "products" | "orders" | "campaigns";
+
 interface AdminSidebarProps {
-  activeTab: "products" | "orders";
-  onTabChange: (tab: "products" | "orders") => void;
+  activeTab: AdminTab;
+  onTabChange: (tab: AdminTab) => void;
 }
 
 const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
   const items = [
     { id: "products" as const, label: "Produits", icon: Package },
+    { id: "campaigns" as const, label: "L'Édition", icon: Sparkles },
     { id: "orders" as const, label: "Commandes", icon: ShoppingCart },
   ];
 
