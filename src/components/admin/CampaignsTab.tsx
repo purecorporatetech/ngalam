@@ -15,7 +15,7 @@ import { Plus, Pencil, Trash2, Users, Radio, Lock } from "lucide-react";
 import { toast } from "sonner";
 import CampaignForm from "./CampaignForm";
 import WaitlistModal from "./WaitlistModal";
-import { type Campaign, formatParisDate } from "@/lib/signares";
+import { type Campaign, formatParisDate } from "@/lib/edition";
 
 const STATUS_META: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
   scheduled: { label: "Programmée", variant: "outline" },
@@ -66,14 +66,14 @@ const CampaignsTab = () => {
   const setStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("campaigns").update({ status }).eq("id", id);
     if (error) { toast.error(error.message); return; }
-    toast.success(status === "live" ? "Signare mise en ligne" : status === "closed" ? "Signare refermée" : "Statut mis à jour");
+    toast.success(status === "live" ? "Édition mise en ligne" : status === "closed" ? "Édition refermée" : "Statut mis à jour");
     refetch();
   };
 
   const deleteCampaign = async (id: string) => {
     const { error } = await supabase.from("campaigns").delete().eq("id", id);
     if (error) { toast.error(error.message); return; }
-    toast.success("Signare supprimée");
+    toast.success("Édition supprimée");
     refetch();
   };
 
@@ -83,7 +83,7 @@ const CampaignsTab = () => {
     return (
       <div>
         <h2 className="font-serif text-xl font-semibold mb-4">
-          {editing ? `Modifier « ${editing.title} »` : "Nouvelle Signare"}
+          {editing ? `Modifier « ${editing.title} »` : "Nouvelle Édition"}
         </h2>
         <CampaignForm
           campaign={editing ?? undefined}
@@ -97,7 +97,7 @@ const CampaignsTab = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-serif text-xl font-semibold">Édition Signares</h2>
+        <h2 className="font-serif text-xl font-semibold">Les Éditions</h2>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => openWaitlist("all")}>
             <Users className="h-4 w-4" />
@@ -105,7 +105,7 @@ const CampaignsTab = () => {
           </Button>
           <Button onClick={() => setCreating(true)}>
             <Plus className="h-4 w-4" />
-            Nouvelle Signare
+            Nouvelle Édition
           </Button>
         </div>
       </div>
@@ -114,7 +114,7 @@ const CampaignsTab = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Signare</TableHead>
+              <TableHead>Figure</TableHead>
               <TableHead>Statut</TableHead>
               <TableHead>Fenêtre (Paris)</TableHead>
               <TableHead>Pièces</TableHead>
@@ -126,7 +126,7 @@ const CampaignsTab = () => {
             {campaigns?.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                  Aucune Signare. Crée la première capsule du mois.
+                  Aucune Édition. Crée la première capsule du mois.
                 </TableCell>
               </TableRow>
             )}
@@ -166,7 +166,7 @@ const CampaignsTab = () => {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Refermer « {c.title} » ?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Une Signare refermée part au Vestiaire et n'est <strong>plus jamais rachetable</strong>.
+                                Une Édition refermée part au Vestiaire et n'est <strong>plus jamais rachetable</strong>.
                                 C'est un acte définitif — le geste rare qui fait la valeur de l'Édition. Confirmer&nbsp;?
                               </AlertDialogDescription>
                             </AlertDialogHeader>

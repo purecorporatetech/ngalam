@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 import { Upload, Loader2 } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
-import { type Campaign, slugify, isoToParisInput, parisInputToIso } from "@/lib/signares";
+import { type Campaign, slugify, isoToParisInput, parisInputToIso } from "@/lib/edition";
 
 interface CampaignFormProps {
   campaign?: Campaign;
@@ -72,7 +72,7 @@ const CampaignForm = ({ campaign, onSuccess, onCancel }: CampaignFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) { toast.error("Le nom de la Signare est requis"); return; }
+    if (!title.trim()) { toast.error("Le nom de la figure est requis"); return; }
     if (!slug.trim()) { toast.error("Le slug est requis"); return; }
     if (!opensAt || !closesAt) { toast.error("Renseignez les dates d'ouverture et de fermeture"); return; }
 
@@ -136,7 +136,7 @@ const CampaignForm = ({ campaign, onSuccess, onCancel }: CampaignFormProps) => {
         if (error) throw error;
       }
 
-      toast.success(isEdit ? "Signare mise à jour" : "Signare créée");
+      toast.success(isEdit ? "Édition mise à jour" : "Édition créée");
       onSuccess();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Erreur lors de l'enregistrement";
@@ -152,7 +152,7 @@ const CampaignForm = ({ campaign, onSuccess, onCancel }: CampaignFormProps) => {
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="c-title">Nom de la Signare *</Label>
+          <Label htmlFor="c-title">Nom de la figure *</Label>
           <Input id="c-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Diongoma" />
         </div>
         <div className="space-y-2">
@@ -216,7 +216,7 @@ const CampaignForm = ({ campaign, onSuccess, onCancel }: CampaignFormProps) => {
       <div className="space-y-3 border-t border-border pt-5">
         <div>
           <h3 className="font-serif text-lg">La capsule</h3>
-          <p className="text-sm text-muted-foreground">Coche les pièces exclusives de cette Signare (elles passent en « drop »).</p>
+          <p className="text-sm text-muted-foreground">Coche les pièces exclusives de cette Édition (elles passent en « drop »).</p>
         </div>
         {!products || products.length === 0 ? (
           <p className="text-sm text-muted-foreground italic">Aucun produit disponible à rattacher.</p>
@@ -246,7 +246,7 @@ const CampaignForm = ({ campaign, onSuccess, onCancel }: CampaignFormProps) => {
       <div className="flex gap-3 pt-2 border-t border-border">
         <Button type="submit" disabled={loading}>
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-          {isEdit ? "Enregistrer" : "Créer la Signare"}
+          {isEdit ? "Enregistrer" : "Créer l'Édition"}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel}>Annuler</Button>
       </div>

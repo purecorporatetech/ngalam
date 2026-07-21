@@ -10,7 +10,7 @@ const Index = () => {
       <SiteHeader />
       <main>
         <HeroSection />
-        {/* TODO Chantier 7 : bloc « Édition Signares en cours » */}
+        {/* TODO Chantier 7 : bloc « L'Édition en cours » */}
         <StorytellingSection />
         <CollectionGrid />
       </main>

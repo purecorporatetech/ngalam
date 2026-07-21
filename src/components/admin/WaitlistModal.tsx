@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Download } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
-import { type Campaign, formatParisDate } from "@/lib/signares";
+import { type Campaign, formatParisDate } from "@/lib/edition";
 
 type WaitlistRow = Tables<"waitlist">;
 
@@ -76,7 +76,7 @@ const WaitlistModal = ({ campaigns, open, onClose, initialFilter = "all" }: Wait
       <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Le Cercle — inscrits</DialogTitle>
-          <DialogDescription>Liste d'attente des Signares (lecture seule).</DialogDescription>
+          <DialogDescription>Liste d'attente des Éditions (lecture seule).</DialogDescription>
         </DialogHeader>
 
         <div className="flex items-center justify-between gap-3 mb-3">
