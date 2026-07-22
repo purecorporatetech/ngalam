@@ -74,7 +74,7 @@ const SiteHeader = () => {
             alt="NGALAM"
             width={800}
             height={107}
-            className="h-[22px] sm:h-7 md:h-8 w-auto"
+            className="h-[18px] sm:h-5 md:h-6 w-auto"
           />
         </Link>
 
