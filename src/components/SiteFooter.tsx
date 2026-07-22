@@ -1,8 +1,6 @@
-import { useState } from "react";
+import WaitlistForm from "@/components/edition/WaitlistForm";
 
 const SiteFooter = () => {
-  const [email, setEmail] = useState("");
-
   return (
     <footer className="bg-foreground text-background border-t border-gold/30">
       <div className="max-w-6xl mx-auto py-10 md:py-16 px-5 md:px-6">
@@ -10,17 +8,8 @@ const SiteFooter = () => {
           {/* Newsletter */}
           <div>
             <h3 className="font-serif text-lg mb-4">Rejoindre le Cercle</h3>
-            <p className="text-sm text-background/60 mb-4">Accès prioritaire aux éditions limitées.</p>
-            <div className="relative">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Votre email"
-                maxLength={255}
-                className="w-full bg-transparent border-b border-background/50 pb-2 text-sm text-background placeholder:text-background/40 focus:outline-none focus:border-gold transition-colors"
-              />
-            </div>
+            <p className="text-sm text-background/60 mb-4">Accès prioritaire aux nouveautés et aux Éditions.</p>
+            <WaitlistForm campaignId={null} className="!max-w-none !mx-0" />
           </div>
 
           {/* Navigation */}

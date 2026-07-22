@@ -40,7 +40,7 @@ const WaitlistForm = ({ campaignId = null, className = "" }: WaitlistFormProps) 
         <span className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
           <Check className="w-4 h-4 text-accent" />
         </span>
-        <p className="font-serif text-lg text-foreground">
+        <p className="font-serif text-lg">
           {status === "already"
             ? "Tu fais déjà partie du Cercle."
             : "Bienvenue dans le Cercle. Tu seras prévenue en premier."}

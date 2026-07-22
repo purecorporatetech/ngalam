@@ -1,7 +1,10 @@
 import SiteHeader from "@/components/SiteHeader";
 import HeroSection from "@/components/HeroSection";
-import StorytellingSection from "@/components/StorytellingSection";
+import ReassuranceBar from "@/components/ReassuranceBar";
+import EditionTeaser from "@/components/EditionTeaser";
 import CollectionGrid from "@/components/CollectionGrid";
+import StorySection from "@/components/StorySection";
+import CircleSection from "@/components/CircleSection";
 import SiteFooter from "@/components/SiteFooter";
 
 const Index = () => {
@@ -10,9 +13,15 @@ const Index = () => {
       <SiteHeader />
       <main>
         <HeroSection />
-        {/* TODO Chantier 7 : bloc « L'Édition en cours » */}
-        <StorytellingSection />
+        <ReassuranceBar />
+        {/* Teaser affiché uniquement si une Édition est réellement ouverte.
+            Conteneur sans padding vertical : aucune bande vide quand null. */}
+        <div className="max-w-6xl mx-auto px-5 md:px-6 [&:not(:empty)]:pt-10 md:[&:not(:empty)]:pt-14">
+          <EditionTeaser />
+        </div>
         <CollectionGrid />
+        <StorySection />
+        <CircleSection />
       </main>
       <SiteFooter />
     </div>

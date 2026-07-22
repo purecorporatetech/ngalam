@@ -24,20 +24,28 @@ const CollectionGrid = () => {
   return (
     <section className="bg-background py-14 md:py-24 px-5 md:px-6">
       <h2 className="text-center font-serif text-2xl sm:text-3xl text-foreground mb-8 md:mb-12">
-        Les Essentiels Solaires
+        Les Essentiels
       </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-x-3 sm:gap-x-6 gap-y-6 md:gap-y-12 max-w-6xl mx-auto">
-        {isLoading
-          ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i}>
-                <Skeleton className="aspect-[3/4] mb-4 rounded-sm" />
-                <Skeleton className="h-5 w-3/4 mb-1" />
-                <Skeleton className="h-4 w-1/3" />
-              </div>
-            ))
-          : products?.map((product) => <ProductCard key={product.id} product={product} />)}
-      </div>
+      {isLoading ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-3 sm:gap-x-6 gap-y-6 md:gap-y-12 max-w-6xl mx-auto">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i}>
+              <Skeleton className="aspect-[3/4] mb-4 rounded-sm" />
+              <Skeleton className="h-5 w-3/4 mb-1" />
+              <Skeleton className="h-4 w-1/3" />
+            </div>
+          ))}
+        </div>
+      ) : products && products.length > 0 ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-3 sm:gap-x-6 gap-y-6 md:gap-y-12 max-w-6xl mx-auto">
+          {products.map((product) => <ProductCard key={product.id} product={product} />)}
+        </div>
+      ) : (
+        <p className="text-center font-serif text-lg text-muted-foreground italic max-w-md mx-auto py-6">
+          Les premières pièces arrivent bientôt.
+        </p>
+      )}
 
       <div className="text-center mt-10 md:mt-14">
         <Link
