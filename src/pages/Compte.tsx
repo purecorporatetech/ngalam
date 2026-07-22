@@ -1,12 +1,16 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
-import { LogOut, Package } from "lucide-react";
+import { LogOut, Package, LayoutDashboard } from "lucide-react";
 
 const Compte = () => {
   const { user, signOut } = useAuth();
+  // Tri-état : isAdmin ne vaut true qu'une fois le rôle résolu (jamais pendant
+  // le chargement), donc le lien n'apparaît pas pour un non-admin ni en flash.
+  const { isAdmin } = useAdminCheck();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -42,10 +46,20 @@ const Compte = () => {
           </p>
         </section>
 
-        <Button variant="outline" onClick={handleSignOut} className="uppercase text-xs tracking-[0.2em]">
-          <LogOut className="w-4 h-4" />
-          Se déconnecter
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          {isAdmin && (
+            <Button asChild className="uppercase text-xs tracking-[0.2em]">
+              <Link to="/admin">
+                <LayoutDashboard className="w-4 h-4" />
+                Administration
+              </Link>
+            </Button>
+          )}
+          <Button variant="outline" onClick={handleSignOut} className="uppercase text-xs tracking-[0.2em]">
+            <LogOut className="w-4 h-4" />
+            Se déconnecter
+          </Button>
+        </div>
       </main>
       <SiteFooter />
     </div>
