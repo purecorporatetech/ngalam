@@ -19,19 +19,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
+    // Synchronise user/session sur tout changement ultérieur, MAIS ne résout pas
+    // `loading` ici : l'événement initial peut arriver avec session=null avant que
+    // getSession() ait restauré la session stockée. Résoudre loading ici créerait
+    // une fenêtre trompeuse « résolu sans utilisateur » (régression rôle admin).
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
     });
 
+    // Source de vérité pour l'état initial : getSession résout `loading`.
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {
