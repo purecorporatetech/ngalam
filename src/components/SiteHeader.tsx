@@ -68,10 +68,14 @@ const SiteHeader = () => {
         </div>
 
         {/* Center: Logo */}
-        <Link to="/" className="absolute left-1/2 -translate-x-1/2">
-          <span className="font-serif font-bold text-2xl tracking-[0.3em] text-foreground">
-            NGALAM
-          </span>
+        <Link to="/" aria-label="NGALAM — Accueil" className="absolute left-1/2 -translate-x-1/2">
+          <img
+            src="/brand/wordmark-indigo-nobaseline.png"
+            alt="NGALAM"
+            width={800}
+            height={107}
+            className="h-[18px] sm:h-5 md:h-6 w-auto"
+          />
         </Link>
 
         {/* Right: icons */}

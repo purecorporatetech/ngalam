@@ -135,6 +135,13 @@ const Boutique = ({ category }: BoutiqueProps) => {
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20">
+            <img
+              src="/brand/monogram-indigo.png"
+              alt=""
+              width={512}
+              height={512}
+              className="w-[140px] h-[140px] mx-auto mb-6 opacity-10"
+            />
             <p className="font-serif text-xl sm:text-2xl text-foreground mb-2">
               Bientôt, les premières pièces
             </p>
