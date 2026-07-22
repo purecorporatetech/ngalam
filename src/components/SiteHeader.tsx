@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Menu, X, Search, User, ShoppingBag, LogOut } from "lucide-react";
+import { Menu, X, Search, User, ShoppingBag } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import {
   DropdownMenu,
@@ -84,31 +84,13 @@ const SiteHeader = () => {
             <Search className="w-[18px] h-[18px]" strokeWidth={1.5} />
           </button>
 
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button aria-label="Mon compte" className="text-foreground hover:text-accent transition-colors">
-                  <User className="w-[18px] h-[18px]" strokeWidth={1.5} />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuItem className="text-xs uppercase tracking-[0.1em] cursor-pointer">
-                  Mon Compte
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handleSignOut}
-                  className="text-xs uppercase tracking-[0.1em] cursor-pointer text-destructive"
-                >
-                  <LogOut className="w-3.5 h-3.5 mr-2" />
-                  Déconnexion
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Link to="/auth" aria-label="Se connecter" className="text-foreground/70 hover:text-foreground transition-colors">
-              <User className="w-[18px] h-[18px]" strokeWidth={1.5} />
-            </Link>
-          )}
+          <Link
+            to={user ? "/compte" : "/auth"}
+            aria-label={user ? "Mon compte" : "Se connecter"}
+            className="text-foreground/70 hover:text-foreground transition-colors"
+          >
+            <User className="w-[18px] h-[18px]" strokeWidth={1.5} />
+          </Link>
 
           <button aria-label="Panier" onClick={openCart} className="relative text-foreground/70 hover:text-foreground transition-colors">
             <ShoppingBag className="w-[18px] h-[18px]" strokeWidth={1.5} />
@@ -160,6 +142,15 @@ const SiteHeader = () => {
               onClick={() => setMobileOpen(false)}
             >
               Se connecter
+            </Link>
+          )}
+          {user && (
+            <Link
+              to="/compte"
+              className="text-sm uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-colors"
+              onClick={() => setMobileOpen(false)}
+            >
+              Mon compte
             </Link>
           )}
           {user && (
