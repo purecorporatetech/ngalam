@@ -5,6 +5,7 @@ import AdminSidebar, { type AdminTab } from "@/components/admin/AdminSidebar";
 import ProductsTab from "@/components/admin/ProductsTab";
 import OrdersTab from "@/components/admin/OrdersTab";
 import CampaignsTab from "@/components/admin/CampaignsTab";
+import HeroSettingsTab from "@/components/admin/HeroSettingsTab";
 import KpiCards from "@/components/admin/KpiCards";
 import { Loader2 } from "lucide-react";
 
@@ -38,6 +39,7 @@ const Admin = () => {
           onOutOfStockClick={() => { setActiveTab("products"); setFilterOutOfStock((v) => !v); }}
           outOfStockActive={filterOutOfStock}
         />
+        {activeTab === "home" && <HeroSettingsTab />}
         {activeTab === "products" && <ProductsTab filterOutOfStock={filterOutOfStock} />}
         {activeTab === "campaigns" && <CampaignsTab />}
         {activeTab === "orders" && <OrdersTab />}
