@@ -1,58 +1,68 @@
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-jewelry.jpg";
-
-const trustItems = [
-  "Livraison Offerte dès 100€",
-  "Finition Or PVD",
-  "Résistant à l'eau",
-  "Hypoallergénique",
-];
+import { HOME_HERO_KEY, DEFAULT_HOME_HERO, parseHomeHero } from "@/lib/siteSettings";
 
 const HeroSection = () => {
+  // Hero piloté par site_settings.home_hero. Fallback local systématique :
+  // la home ne doit jamais casser si la requête échoue ou renvoie vide.
+  const { data } = useQuery({
+    queryKey: ["site-settings", HOME_HERO_KEY],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings").select("value").eq("key", HOME_HERO_KEY).maybeSingle();
+      if (error) throw error;
+      return data?.value ?? null;
+    },
+  });
+
+  const hero = parseHomeHero(data ?? DEFAULT_HOME_HERO);
+  const hasMedia = !!hero.media_url;
+  const light = hasMedia; // texte clair sur media sombre, sinon texte foncé sur fond token
+
   return (
-    <section className="relative min-h-[70vh] md:min-h-[80vh] flex flex-col justify-center items-center text-center overflow-hidden"
-      style={{
-        background: "linear-gradient(180deg, hsl(24 14% 94%) 0%, hsl(44 58% 93%) 100%)",
-      }}
-    >
-      {/* Decorative background image with overlay */}
-      <div className="absolute inset-0 opacity-[0.07]">
-        <img src={heroImage} alt="" className="w-full h-full object-cover" aria-hidden="true" />
-      </div>
+    <section className={`relative min-h-[70vh] md:min-h-[80vh] flex flex-col justify-center items-center text-center overflow-hidden ${hasMedia ? "" : "bg-secondary"}`}>
+      {/* Media plein écran (image ou vidéo) + overlay pour lisibilité */}
+      {hasMedia && (
+        <>
+          {hero.media_type === "video" ? (
+            <video
+              className="absolute inset-0 w-full h-full object-cover"
+              src={hero.media_url!}
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          ) : (
+            <img src={hero.media_url!} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover" />
+          )}
+          <div className="absolute inset-0 bg-foreground/45" />
+        </>
+      )}
 
-      <div className="relative z-10 px-5 md:px-6 max-w-4xl mx-auto">
-        <span className="inline-block text-[10px] md:text-xs uppercase tracking-[0.3em] text-primary mb-3 md:mb-4 animate-fade-up font-medium">
-          Chapitre 1 : Dakar
-        </span>
-        <h1 className="font-serif text-3xl sm:text-5xl md:text-7xl text-foreground mb-4 md:mb-6 animate-fade-up tracking-tight leading-[1.1]">
-          L'ÉLÉGANCE SOLAIRE.
+      <div className="relative z-10 px-5 md:px-6 max-w-4xl mx-auto py-20">
+        {hero.eyebrow && (
+          <span className={`inline-block text-[10px] md:text-xs uppercase tracking-[0.3em] mb-3 md:mb-4 font-medium animate-fade-up ${light ? "text-primary-foreground/80" : "text-primary"}`}>
+            {hero.eyebrow}
+          </span>
+        )}
+        <h1 className={`font-serif text-3xl sm:text-5xl md:text-7xl mb-4 md:mb-6 animate-fade-up tracking-tight leading-[1.1] ${light ? "text-primary-foreground" : "text-foreground"}`}>
+          {hero.title}
         </h1>
-        <p className="font-sans text-base md:text-lg tracking-wide text-muted-foreground mb-6 md:mb-8 max-w-md md:max-w-xl mx-auto animate-fade-up"
-          style={{ animationDelay: "0.15s" }}
-        >
-          Hommage aux reines de l'élégance de Saint-Louis. Une parure pour celles qui portent l'histoire comme une seconde peau.
-        </p>
-        <div className="animate-fade-up" style={{ animationDelay: "0.3s" }}>
-          <Button variant="default" size="lg" className="rounded-sm px-6 md:px-8 py-3 md:py-4 h-auto text-[10px] md:text-xs uppercase tracking-[0.25em]">
-            Voir le Chapitre 1
-          </Button>
-        </div>
-      </div>
-
-      {/* Trust banner */}
-      <div className="relative z-10 mt-auto pb-6 md:pb-8 pt-12 md:pt-16">
-        <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-3 sm:gap-6 md:gap-10">
-          {trustItems.map((item, i) => (
-            <span
-              key={item}
-              className="text-[9px] sm:text-[10px] md:text-xs uppercase tracking-[0.15em] md:tracking-[0.2em] text-foreground/50 animate-fade-in"
-              style={{ animationDelay: `${0.5 + i * 0.1}s` }}
-            >
-              {i > 0 && <span className="hidden sm:inline mr-6 md:mr-10 text-gold">✦</span>}
-              {item}
-            </span>
-          ))}
-        </div>
+        {hero.subtitle && (
+          <p className={`font-sans text-base md:text-lg tracking-wide mb-6 md:mb-8 max-w-md md:max-w-xl mx-auto animate-fade-up ${light ? "text-primary-foreground/85" : "text-muted-foreground"}`} style={{ animationDelay: "0.15s" }}>
+            {hero.subtitle}
+          </p>
+        )}
+        {hero.cta_label && (
+          <div className="animate-fade-up" style={{ animationDelay: "0.3s" }}>
+            <Button asChild size="lg" className="rounded-sm px-6 md:px-8 py-3 md:py-4 h-auto text-[10px] md:text-xs uppercase tracking-[0.25em]">
+              <Link to={hero.cta_href || "/boutique"}>{hero.cta_label}</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );
