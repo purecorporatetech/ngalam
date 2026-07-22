@@ -9,7 +9,12 @@ const SiteFooter = () => {
           <div>
             <h3 className="font-serif text-lg mb-4">Rejoindre le Cercle</h3>
             <p className="text-sm text-background/60 mb-4">Accès prioritaire aux nouveautés et aux Éditions.</p>
-            <WaitlistForm campaignId={null} className="!max-w-none !mx-0" />
+            <WaitlistForm
+              campaignId={null}
+              layout="stacked"
+              placeholder="Votre email"
+              inputClassName="bg-transparent border-0 border-b border-background/50 rounded-none px-0 h-11 text-background placeholder:text-background/40 focus-visible:ring-0 focus-visible:border-gold"
+            />
           </div>
 
           {/* Navigation */}
