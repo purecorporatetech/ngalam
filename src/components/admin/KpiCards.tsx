@@ -14,7 +14,7 @@ const KpiCards = ({ onOutOfStockClick, outOfStockActive }: KpiCardsProps) => {
     queryFn: async () => {
       const [ordersRes, productsRes] = await Promise.all([
         supabase.from("orders").select("status, total_amount"),
-        supabase.from("products").select("stock_quantity"),
+        supabase.from("products").select("id, product_variants(stock_quantity)"),
       ]);
       if (ordersRes.error) throw ordersRes.error;
       if (productsRes.error) throw productsRes.error;
@@ -30,7 +30,10 @@ const KpiCards = ({ onOutOfStockClick, outOfStockActive }: KpiCardsProps) => {
         ["paid", "preparing"].includes(o.status)
       ).length;
 
-      const outOfStock = products.filter((p) => p.stock_quantity === 0).length;
+      // Rupture = stock agrégé des variantes à 0 (source unique product_variants).
+      const outOfStock = products.filter(
+        (p) => (p.product_variants ?? []).reduce((s, v) => s + v.stock_quantity, 0) === 0
+      ).length;
 
       return { revenue, activeOrders, outOfStock };
     },

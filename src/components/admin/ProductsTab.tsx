@@ -16,15 +16,17 @@ import { toast } from "sonner";
 import ProductForm from "./ProductForm";
 import InlineEditCell from "./InlineEditCell";
 import EditProductModal from "./EditProductModal";
-import type { Tables, TablesUpdate } from "@/integrations/supabase/types";
+import type { Tables } from "@/integrations/supabase/types";
 
 interface ProductsTabProps {
   filterOutOfStock?: boolean;
 }
 
 type VariantSummary = Pick<Tables<"product_variants">, "finish" | "stock_quantity">;
+type ImageSummary = Pick<Tables<"product_images">, "image_url" | "is_primary">;
 type ProductWithVariants = Tables<"products"> & {
   product_variants: VariantSummary[];
+  product_images: ImageSummary[];
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -34,11 +36,15 @@ const CATEGORY_LABELS: Record<string, string> = {
   boucles: "Boucles d'oreilles",
 };
 
-// Stock effectif : somme des variantes si présentes, sinon stock legacy du produit.
+// Stock effectif = somme des variantes (source unique product_variants.stock_quantity).
 const totalStock = (p: ProductWithVariants) =>
-  p.product_variants.length > 0
-    ? p.product_variants.reduce((s, v) => s + v.stock_quantity, 0)
-    : p.stock_quantity;
+  p.product_variants.reduce((s, v) => s + v.stock_quantity, 0);
+
+// Vignette : image principale de la galerie (product_images), placeholder sinon.
+const primaryImage = (p: ProductWithVariants): string | null => {
+  const imgs = p.product_images ?? [];
+  return (imgs.find((i) => i.is_primary) ?? imgs[0])?.image_url ?? null;
+};
 
 const ProductsTab = ({ filterOutOfStock = false }: ProductsTabProps) => {
   const [showForm, setShowForm] = useState(false);
@@ -49,7 +55,7 @@ const ProductsTab = ({ filterOutOfStock = false }: ProductsTabProps) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*, product_variants(finish, stock_quantity)")
+        .select("*, product_variants(finish, stock_quantity), product_images(image_url, is_primary)")
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -57,19 +63,15 @@ const ProductsTab = ({ filterOutOfStock = false }: ProductsTabProps) => {
     },
   });
 
-  const updateField = async (
-    id: string,
-    field: "price" | "stock_quantity",
-    value: number
-  ) => {
-    const patch: TablesUpdate<"products"> =
-      field === "price" ? { price: value } : { stock_quantity: value };
-    const { error } = await supabase.from("products").update(patch).eq("id", id);
+  // Seul le prix produit s'édite en ligne. Le stock se gère par variante
+  // (product_variants) dans le formulaire produit — plus de stock legacy.
+  const updatePrice = async (id: string, value: number) => {
+    const { error } = await supabase.from("products").update({ price: value }).eq("id", id);
     if (error) {
       toast.error(error.message);
       return;
     }
-    toast.success(field === "price" ? "Prix mis à jour" : "Stock mis à jour");
+    toast.success("Prix mis à jour");
     refetch();
   };
 
@@ -132,11 +134,12 @@ const ProductsTab = ({ filterOutOfStock = false }: ProductsTabProps) => {
               .map((product) => {
                 const stock = totalStock(product);
                 const hasVariants = product.product_variants.length > 0;
+                const img = primaryImage(product);
                 return (
               <TableRow key={product.id} className={stock === 0 ? "bg-destructive/5" : stock < 5 ? "bg-orange-50 dark:bg-orange-950/20" : ""}>
                 <TableCell>
-                  {product.image_url ? (
-                    <img src={product.image_url} alt={product.name} className="h-10 w-10 object-cover rounded" />
+                  {img ? (
+                    <img src={img} alt={product.name} className="h-10 w-10 object-cover rounded" />
                   ) : (
                     <div className="h-10 w-10 bg-muted rounded" />
                   )}
@@ -160,7 +163,7 @@ const ProductsTab = ({ filterOutOfStock = false }: ProductsTabProps) => {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <InlineEditCell value={product.price} type="price" onSave={(v) => updateField(product.id, "price", v)} />
+                  <InlineEditCell value={product.price} type="price" onSave={(v) => updatePrice(product.id, v)} />
                 </TableCell>
                 <TableCell>
                   {hasVariants ? (
@@ -185,15 +188,9 @@ const ProductsTab = ({ filterOutOfStock = false }: ProductsTabProps) => {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2">
-                      <InlineEditCell value={product.stock_quantity} type="stock" onSave={(v) => updateField(product.id, "stock_quantity", v)} />
-                      {stock === 0 && (
-                        <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
-                          <AlertTriangle className="h-3 w-3 mr-0.5" />
-                          ÉPUISÉ
-                        </Badge>
-                      )}
-                    </div>
+                    <span className="text-muted-foreground text-sm" title="Ajoutez des variantes de finition pour gérer le stock">
+                      — <span className="text-xs">(sans variante)</span>
+                    </span>
                   )}
                 </TableCell>
                 <TableCell>{product.is_featured ? "✓" : "—"}</TableCell>
