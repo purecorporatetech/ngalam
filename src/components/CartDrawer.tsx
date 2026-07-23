@@ -16,7 +16,7 @@ const CartDrawer = () => {
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout-session", {
         body: {
-          items: items.map((i) => ({ id: i.id, quantity: i.quantity })),
+          items: items.map((i) => ({ id: i.id, finish: i.finish ?? null, quantity: i.quantity })),
           origin: window.location.origin,
         },
       });
