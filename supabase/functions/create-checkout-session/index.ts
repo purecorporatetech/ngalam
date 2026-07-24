@@ -126,7 +126,7 @@ Deno.serve(async (req) => {
       // user_id en metadata de session (achat invité = chaîne vide → null au webhook).
       metadata: { user_id: userId ?? "" },
       shipping_address_collection: {
-        allowed_countries: ["FR", "BE", "CH", "LU", "DE", "ES", "IT", "NL", "PT", "SN", "CI", "ML", "MA", "CA"],
+        allowed_countries: ["FR", "BE", "LU", "DE", "ES", "IT", "NL", "PT"],
       },
     });
 

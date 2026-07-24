@@ -1,6 +1,6 @@
 // Barre de réassurance — contenu neutre et vrai, sans claim matière.
 const items = [
-  "Livraison suivie",
+  "Livraison offerte",
   "Fabrication artisanale à Dakar",
   "Paiement sécurisé",
   "Éditions limitées",
