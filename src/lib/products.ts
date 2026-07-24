@@ -30,17 +30,14 @@ export const FINISHES: { key: string; label: string }[] = [
   { key: "argent", label: "Argent" },
 ];
 
-// Galerie triée (par position), avec repli sur products.image_url si aucune image
-// n'a été enregistrée dans product_images.
+// Galerie triée : image principale d'abord, puis par position.
+// Source unique = product_images (plus de repli sur products.image_url legacy).
 export const getGalleryUrls = (p: ShopProduct): string[] => {
   const imgs = [...(p.product_images ?? [])].sort((a, b) => {
-    // L'image principale d'abord, puis par position.
     if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
     return a.position - b.position;
   });
-  const urls = imgs.map((i) => i.image_url).filter(Boolean);
-  if (urls.length > 0) return urls;
-  return p.image_url ? [p.image_url] : [];
+  return imgs.map((i) => i.image_url).filter(Boolean);
 };
 
 // Finitions réellement proposées (lignes présentes dans product_variants).
@@ -59,8 +56,7 @@ export const getPriceInfo = (p: ShopProduct): { min: number; from: boolean } => 
   return { min, from: min < p.price };
 };
 
-// Stock effectif : somme des variantes si présentes, sinon stock legacy.
+// Stock effectif = somme des variantes. Source unique product_variants.stock_quantity
+// (plus de repli sur products.stock_quantity legacy) : un produit sans variante = 0.
 export const getTotalStock = (p: ShopProduct): number =>
-  (p.product_variants ?? []).length > 0
-    ? p.product_variants.reduce((s, v) => s + v.stock_quantity, 0)
-    : p.stock_quantity;
+  (p.product_variants ?? []).reduce((s, v) => s + v.stock_quantity, 0);

@@ -86,6 +86,7 @@ export type Database = {
       }
       order_items: {
         Row: {
+          finish: string
           id: string
           order_id: string
           price_at_purchase: number
@@ -93,6 +94,7 @@ export type Database = {
           quantity: number
         }
         Insert: {
+          finish: string
           id?: string
           order_id: string
           price_at_purchase: number
@@ -100,6 +102,7 @@ export type Database = {
           quantity?: number
         }
         Update: {
+          finish?: string
           id?: string
           order_id?: string
           price_at_purchase?: number
@@ -131,6 +134,7 @@ export type Database = {
           id: string
           shipping_address: Json | null
           status: string
+          stripe_session_id: string | null
           total_amount: number
           updated_at: string
           user_id: string | null
@@ -142,6 +146,7 @@ export type Database = {
           id?: string
           shipping_address?: Json | null
           status?: string
+          stripe_session_id?: string | null
           total_amount?: number
           updated_at?: string
           user_id?: string | null
@@ -153,6 +158,7 @@ export type Database = {
           id?: string
           shipping_address?: Json | null
           status?: string
+          stripe_session_id?: string | null
           total_amount?: number
           updated_at?: string
           user_id?: string | null
@@ -376,6 +382,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_paid_order: {
+        Args: {
+          _customer_email: string
+          _customer_name: string
+          _items: Json
+          _shipping_address: Json
+          _stripe_session_id: string
+          _total_amount: number
+          _user_id: string
+        }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

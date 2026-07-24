@@ -193,21 +193,13 @@ const ProductForm = ({ product, onSuccess, onCancel }: ProductFormProps) => {
     setLoading(true);
     try {
       const basePrice = parseFloat(price);
-      // Stock legacy (products.stock_quantity) = somme des variantes actives,
-      // pour rester compatible avec la vitrine qui lit encore ce champ.
-      const totalStock = activeFinishes.reduce(
-        (sum, f) => sum + (parseInt(variants[f].stock) || 0),
-        0
-      );
-      // Pont de compat : la vitrine filtre sur category != 'Drop'.
-      const legacyCategory = availability === "drop" ? "Drop" : categoryKey || "Autre";
-
+      // Colonnes legacy (stock_quantity, category, image_url) non écrites : le stock
+      // vit dans product_variants, les images dans product_images, la catégorie dans
+      // category_key. Plus aucun pont de compat.
       const corePayload = {
         name,
         description: description || null,
         price: basePrice,
-        stock_quantity: totalStock,
-        category: legacyCategory,
         category_key: categoryKey || null,
         availability,
         wolof_name: wolofName || null,
@@ -238,11 +230,9 @@ const ProductForm = ({ product, onSuccess, onCancel }: ProductFormProps) => {
         const { error } = await supabase.from("product_images").delete().in("id", removedImageIds);
         if (error) throw error;
       }
-      let primaryUrl: string | null = null;
       for (let i = 0; i < gallery.length; i++) {
         const item = gallery[i];
         const url = item.file ? await uploadFile(item.file) : item.url;
-        if (item.isPrimary) primaryUrl = url;
         if (item.existingId) {
           const { error } = await supabase
             .from("product_images")
@@ -259,14 +249,6 @@ const ProductForm = ({ product, onSuccess, onCancel }: ProductFormProps) => {
           });
           if (error) throw error;
         }
-      }
-      // Refléter l'image principale sur products.image_url (compat vitrine).
-      if (primaryUrl) {
-        const { error } = await supabase
-          .from("products")
-          .update({ image_url: primaryUrl })
-          .eq("id", productId);
-        if (error) throw error;
       }
 
       // 3. Variantes : upsert des actives, suppression des désactivées.

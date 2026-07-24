@@ -20,7 +20,15 @@ interface CampaignFormProps {
   onCancel: () => void;
 }
 
-type ProductLite = Pick<Tables<"products">, "id" | "name" | "image_url" | "drop_id">;
+type ProductLite = Pick<Tables<"products">, "id" | "name" | "drop_id"> & {
+  product_images: Pick<Tables<"product_images">, "image_url" | "is_primary">[];
+};
+
+// Vignette : image principale de la galerie (product_images), placeholder sinon.
+const productThumb = (p: ProductLite): string | null => {
+  const imgs = p.product_images ?? [];
+  return (imgs.find((i) => i.is_primary) ?? imgs[0])?.image_url ?? null;
+};
 
 const CampaignForm = ({ campaign, onSuccess, onCancel }: CampaignFormProps) => {
   const isEdit = !!campaign;
@@ -49,7 +57,7 @@ const CampaignForm = ({ campaign, onSuccess, onCancel }: CampaignFormProps) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, image_url, drop_id")
+        .select("id, name, drop_id, product_images(image_url, is_primary)")
         .order("name", { ascending: true });
       if (error) throw error;
       return (data ?? []) as ProductLite[];
@@ -224,11 +232,12 @@ const CampaignForm = ({ campaign, onSuccess, onCancel }: CampaignFormProps) => {
           <div className="space-y-1 max-h-60 overflow-y-auto border border-border rounded-sm p-2">
             {products.map((p) => {
               const attachedElsewhere = p.drop_id && p.drop_id !== campaign?.id;
+              const thumb = productThumb(p);
               return (
                 <label key={p.id} className="flex items-center gap-3 px-2 py-1.5 rounded hover:bg-secondary cursor-pointer">
                   <Checkbox checked={selected.has(p.id)} onCheckedChange={() => toggleProduct(p.id)} />
-                  {p.image_url ? (
-                    <img src={p.image_url} alt="" className="h-8 w-8 object-cover rounded-sm" />
+                  {thumb ? (
+                    <img src={thumb} alt="" className="h-8 w-8 object-cover rounded-sm" />
                   ) : (
                     <div className="h-8 w-8 bg-muted rounded-sm" />
                   )}
