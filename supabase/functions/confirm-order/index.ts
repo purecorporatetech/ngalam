@@ -1,16 +1,5 @@
 import Stripe from "https://esm.sh/stripe@17.7.0?target=deno&deno-std=0.132.0";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
-
-const json = (body: unknown, status: number) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+import { corsHeaders } from "../_shared/cors.ts";
 
 // LECTURE SEULE — sert uniquement à afficher la confirmation sur /success.
 //
@@ -21,8 +10,12 @@ const json = (body: unknown, status: number) =>
 // orders.stripe_session_id). Cette fonction ne lit donc aucune colonne legacy
 // (products.stock_quantity / image_url) et n'écrit rien.
 Deno.serve(async (req) => {
+  const cors = corsHeaders(req);
+  const json = (body: unknown, status: number) =>
+    new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
+
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: cors });
   }
 
   try {
