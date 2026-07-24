@@ -5,3 +5,8 @@ verify_jwt = false
 
 [functions.confirm-order]
 verify_jwt = false
+
+# Webhook Stripe : public (Stripe n'envoie pas de JWT Supabase) — sécurisé par
+# la vérification de signature STRIPE_WEBHOOK_SECRET dans la fonction.
+[functions.stripe-webhook]
+verify_jwt = false
